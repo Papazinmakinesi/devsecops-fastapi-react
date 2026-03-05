@@ -1,0 +1,64 @@
+name: DevSecOps CI Pipeline
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install deps
+      run: |
+        python -m pip install --upgrade pip
+        pip install bandit pip-audit
+
+    - name: Run Bandit (SAST)
+      run: bandit -r backend -f txt -o bandit-report.txt || true
+
+    - name: Run pip-audit (Dependency scan)
+      run: pip-audit -r backend/requirements.txt -f txt -o pip-audit-report.txt || true
+
+    - name: Run Gitleaks (Secret scan)
+      uses: gitleaks/gitleaks-action@v2
+      with:
+        args: detect --report-format json --report-path gitleaks-report.json
+
+    - name: Build Docker image
+      run: docker build -t app ./backend
+
+    - name: Run Trivy (Container scan)
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'app'
+        format: 'table'
+        output: 'trivy-report.txt'
+
+    - name: Start app
+      run: |
+        docker run -d -p 8000:8000 --name app app
+        sleep 10
+
+    - name: ZAP Baseline Scan (DAST)
+      uses: zaproxy/action-baseline@v0.10.0
+      with:
+        target: 'http://localhost:8000'
+
+    - name: Upload reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: security-reports
+        path: |
+          bandit-report.txt
+          pip-audit-report.txt
+          gitleaks-report.json
+          trivy-report.txt
