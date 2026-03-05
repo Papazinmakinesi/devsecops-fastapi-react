@@ -13,7 +13,9 @@ A full-stack DevSecOps demonstration project that runs a containerized **FastAPI
 ---
 
 ## ✨ What’s inside
+## 📸 Dashboard Preview
 
+![Dashboard Screenshot](docs/images/dashboard.png)
 - **Backend:** FastAPI (Python) + Docker
 - **Frontend:** React (Vite) served by Nginx
 - **Reverse proxy:** `/api/*` routed from frontend → backend
