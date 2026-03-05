@@ -1,112 +1,24 @@
-# devsecops-fastapi-react
+# 🔐 DevSecOps FastAPI + React Demo
 
-Full-stack DevSecOps showcase using FastAPI and React with automated security testing: Bandit SAST, OWASP ZAP DAST, Trivy container scan, pip-audit, and GitHub Actions CI.
+[![CI](https://github.com/Papazinmakinesi/devsecops-fastapi-react/actions/workflows/ci.yml/badge.svg)](https://github.com/Papazinmakinesi/devsecops-fastapi-react/actions/workflows/ci.yml)
 
-
-
-\#  DevSecOps FastAPI + React Demo
-
-
-
-A full-stack DevSecOps demonstration project showcasing automated security testing and CI/CD integration.
-
-
+A full-stack DevSecOps demonstration project that runs a containerized **FastAPI backend** and **React frontend** with an automated security pipeline in **GitHub Actions**.
 
 ---
 
+## ✨ What’s inside
 
-
-\##  Features
-
-
-
-\- FastAPI backend (Dockerized)
-
-\- React frontend (container-ready)
-
-\- Automated GitHub Actions CI pipeline
-
-\- Security-first development workflow
-
-
+- **Backend:** FastAPI (Python) + Docker
+- **Frontend:** React (Vite) served by Nginx
+- **Reverse proxy:** `/api/*` routed from frontend → backend
+- **CI / DevSecOps:** Automated scans on every push with downloadable reports (Artifacts)
 
 ---
 
+## 🧱 Architecture
 
-
-\##  Automated Security Pipeline
-
-
-
-Every push triggers a complete DevSecOps security workflow:
-
-
-
-| Security Layer | Tool |
-
-|----------------|------|
-
-| Static Application Security Testing (SAST) | Bandit |
-
-| Dependency Vulnerability Scan | pip-audit |
-
-| Secret Leak Detection | Gitleaks |
-
-| Container Security Scan | Trivy |
-
-| Dynamic Application Security Testing (DAST) | OWASP ZAP |
-
-
-
----
-
-
-
-\##  CI/CD Pipeline
-
-
-
-GitHub Actions automatically:
-
-\- Builds Docker containers
-
-\- Runs security scans
-
-\- Performs live API security testing
-
-\- Generates downloadable security reports
-
-
-
----
-
-
-
-\##  Security Reports
-
-
-
-Pipeline artifacts include:
-
-\- `bandit-report.txt`
-
-\- `pip-audit-report.txt`
-
-\- `gitleaks-report.json`
-
-\- `trivy-report.txt`
-
-
-
----
-
-
-
-\##  Run Locally
-
-
-
-```bash
-
-docker compose up --build
-
+```mermaid
+flowchart LR
+  U[User Browser] -->|HTTP :5173| F[Nginx Frontend Container]
+  F -->|/api/*| B[FastAPI Backend Container :8000]
+  B -->|JSON| F
